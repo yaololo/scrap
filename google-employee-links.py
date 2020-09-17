@@ -64,35 +64,3 @@ def write_to_file(index):
 
 for i in range(50):
   write_to_file(i+1)
-
-# #  after login, visit google
-# googleLinkedInUrl = "https://www.linkedin.com/search/results/people/?facetCurrentCompany=%5B%221441%22%2C%2217876832%22%2C%22791962%22%2C%2216140%22%2C%2210440912%22%5D&origin=COMPANY_PAGE_CANNED_SEARCH"
-# driver.get(googleLinkedInUrl)
-
-# # Scroll page down to bottom to load all DOM element
-# driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-# driver.implicitly_wait(4)
-
-# ulCss = "search-results__list list-style-none "
-# element = driver.find_element_by_xpath("""//ul[contains(@class, 'search-results__list list-style-none ')]""")
-
-# all_li = element.find_elements_by_tag_name('li')
-
-# link_list = [len(all_li)]
-
-
-# with open('./google/employee_file2.csv', mode='w') as csv_file:
-#   fieldnames = ['profile_link']
-#   writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-#   writer.writeheader()
-
-#   for i in range(len(all_li)):
-#     print(all_li[i].find_element_by_tag_name("a").get_attribute('innerHTML'))
-
-#     link = "" + all_li[i].find_element_by_tag_name("a").get_attribute("href")
-#     # Filter out bot link
-
-#     if "search/results" not in link:
-#       writer.writerow({'profile_link': link})
-#       print(link)
-

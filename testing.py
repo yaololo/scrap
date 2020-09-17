@@ -1,14 +1,7 @@
-# import csv
+import csv
 
-# with open('./google/employee_file2.csv', mode='w') as csv_file:
-#     fieldnames = ['emp_name', 'dept', 'birth_month']
-#     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-
-#     writer.writeheader()
-#     writer.writerow({'emp_name': 'John Smith', 'dept': 'Accounting', 'birth_month': 'November'})
-#     writer.writerow({'emp_name': 'Erica Meyers', 'dept': 'IT', 'birth_month': 'March'})
-# l =[1,2,3,4]
-l = []
-
-l.append(1)
-print(l)
+with open('./google/employee_file1.csv') as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=',')
+    for row in csv_reader:
+      if "profile_link" not in row[0]:
+        print(row)
