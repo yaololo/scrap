@@ -1,7 +1,13 @@
 import csv
 
-with open('./google/employee_file1.csv') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
-    for row in csv_reader:
-      if "profile_link" not in row[0]:
-        print(row)
+with open(f"./google_employee_profile/employee_profile.csv", mode='w') as csv_file:
+    fieldnames = ['name', 'duration', "job_title",
+                  "company_url", "company_name"]
+    writer = csv.writer(csv_file, delimiter=',',
+                        quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    writer.writerow(fieldnames)
+
+    writer.writerow(['ss', 'sss', 'ssss', 'ddddd', 'ssdfa', 'sdfsdf'])
+    # for profile in employee_profile:
+    #     writer.writerow(profile)
+    #     print(profile)
