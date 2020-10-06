@@ -123,8 +123,10 @@ def get_all_data(employee_name, durations, company_url, unique_job_titles, job_t
         return row
 
 
-def handle_same_company(lis, company_name):
+def handle_same_company(lis, company_name, profile_url, name):
+    rows = []
     for li in lis:
+        cols = []
         print("===============same company=================")
         job_title = li.find_element_by_xpath(
             """div[contains(@class, 'ember-view')]//h3[contains(@class, 't-14 t-black t-bold')]""").find_elements_by_tag_name("span")[1].text
@@ -139,12 +141,21 @@ def handle_same_company(lis, company_name):
         if len(locations) > 0:
             location = locations[0].find_elements_by_tag_name("span")[1].text
 
+        cols.append(profile_url)
+        cols.append(name)
+        cols.append(duration)
+        cols.append(location)
+        cols.append(job_title)
+        cols.append(company_name)
+        rows.append(cols)
+
         print(company_name, job_title, duration, location)
-        print("============== full =============")
-        print(li.text)
+
+    return rows
 
 
-def handle_unique_working_block(block):
+def handle_unique_working_block(block, profile_url, name):
+    row = []
     job_title = block.find_element_by_xpath(
         """h3[contains(@class, 't-16 t-black t-bold')]""").text
 
@@ -169,7 +180,15 @@ def handle_unique_working_block(block):
     if len(locations) > 0:
         location = locations[0].find_elements_by_tag_name("span")[1].text
 
+    row.append(profile_url)
+    row.append(name)
+    row.append(duration)
+    row.append(location)
+    row.append(job_title)
+    row.append(company_name)
+
     print(company_name, job_title, duration, location)
+    return row
 
 
 def get_employee_profile(url):
@@ -208,21 +227,28 @@ def get_employee_profile(url):
         same_c_lis = working_li.find_elements_by_xpath(
             """section[contains(@class, 'pv-profile-section__card-item-v2 pv-profile-section pv-position-entity ember-view')]//ul//li""")
 
+        group_working_exp = []
+
         if len(same_c_lis) > 0:
             company_name = working_li.find_element_by_xpath(
                 """section[contains(@class, 'pv-profile-section__card-item-v2 pv-profile-section pv-position-entity ember-view')]//div[contains(@class, 'pv-entity__company-summary-info')]//h3[contains(@class, 't-16 t-black t-bold')]""").find_elements_by_tag_name("span")[1].text
 
             print("in group")
-            handle_same_company(same_c_lis, company_name)
+            group_working_exp = group_working_exp + \
+                handle_same_company(
+                    same_c_lis, company_name, url, employee_name)
         else:
             print("in individual")
 
             unique_working_block = working_li.find_element_by_xpath(
                 """section[contains(@class, 'pv-profile-section__card-item-v2 pv-profile-section pv-position-entity ember-view')]//a[@data-control-name='background_details_company']//div[contains(@class, 'pv-entity__summary-info pv-entity__summary-info--background-section mb2')]""")
             print("================================")
-            handle_unique_working_block(unique_working_block)
-            print("===========full =====================")
-            print(unique_working_block.text)
+            group_working_exp.append(
+                handle_unique_working_block(unique_working_block, url, employee_name))
+
+    print(group_working_exp)
+
+    return group_working_exp
 
     # group_working_experience = section_working_experience.find_elements_by_xpath(
     #     """//section[contains(@class, 'pv-profile-section__card-item-v2 pv-profile-section pv-position-entity ember-view')]//ul[contains(@class, 'pv-entity__position-group mt2')]""")
