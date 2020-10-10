@@ -26,7 +26,6 @@ def handle_same_company(lis, company_name, profile_url, name):
     rows = []
     for li in lis:
         cols = []
-        print("===============same company=================")
         job_title = li.find_element_by_xpath(
             """div[contains(@class, 'ember-view')]//h3[contains(@class, 't-14 t-black t-bold')]""").find_elements_by_tag_name("span")[1].text
 
@@ -42,13 +41,12 @@ def handle_same_company(lis, company_name, profile_url, name):
 
         cols.append(profile_url)
         cols.append(name)
-        cols.append(duration)
+        cols.append(duration.replace("–", "-"))
         cols.append(location)
         cols.append(job_title)
         cols.append(company_name)
         rows.append(cols)
 
-    print(rows)
     return rows
 
 
@@ -81,7 +79,7 @@ def handle_unique_working_block(block, profile_url, name):
 
     row.append(profile_url)
     row.append(name)
-    row.append(duration)
+    row.append(duration.replace("–", "-"))
     row.append(location)
     row.append(job_title)
     row.append(company_name)
@@ -91,17 +89,14 @@ def handle_unique_working_block(block, profile_url, name):
 
 def get_employee_profile(url):
     #  visit url
-    time.sleep(3)
     driver.get(url)
-    # driver.get("file:///Users/yozhuan/project/scraper/test.html")
     time.sleep(2)
 
     # Scroll page down to bottom to load all DOM element
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight/2);")
-    time.sleep(1)
-
+    time.sleep(2)
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # time.sleep(1)
+    time.sleep(2)
 
     main_element = driver.find_element_by_xpath(
         """//main[contains(@class, 'core-rail')]""")
@@ -127,55 +122,60 @@ def get_employee_profile(url):
         if len(same_c_lis) > 0:
             company_name = working_li.find_element_by_xpath(
                 """section[contains(@class, 'pv-profile-section__card-item-v2 pv-profile-section pv-position-entity ember-view')]//div[contains(@class, 'pv-entity__company-summary-info')]//h3[contains(@class, 't-16 t-black t-bold')]""").find_elements_by_tag_name("span")[1].text
-
             group_working_exp += handle_same_company(
                 same_c_lis, company_name, url, employee_name)
 
         else:
             unique_working_block = working_li.find_element_by_xpath(
-                """section[contains(@class, 'pv-profile-section__card-item-v2 pv-profile-section pv-position-entity ember-view')]//a[@data-control-name='background_details_company']//div[contains(@class, 'pv-entity__summary-info pv-entity__summary-info--background-section mb2')]""")
+                """section[contains(@class, 'pv-profile-section__card-item-v2 pv-profile-section pv-position-entity ember-view')]//a[@data-control-name='background_details_company']//div[contains(@class, 'pv-entity__summary-info pv-entity__summary-info--background-section')]""")
+
             group_working_exp.append(
                 handle_unique_working_block(unique_working_block, url, employee_name))
 
-    print(group_working_exp)
-
+    # print(group_working_exp)
     return group_working_exp
 
 
-get_employee_profile("https://www.linkedin.com/in/yilin-chiam-aa376886/")
-# a = get_employee_profile("https://www.linkedin.com/in/haliyusof/")
-# print(a)
+def write_employee_profile(index):
+    with open(f'./google/employee_file{index}.csv', encoding='utf-8-sig') as csv_file_open:
+        csv_reader = csv.reader(csv_file_open, delimiter=',')
+
+        with open(f"./new_google_employee_profile/employee_profile{index}.csv", mode='w', newline='', encoding='utf-8-sig') as csv_file_write:
+            fieldnames = ['employee_url','name', 'duration','location', "job_title", "company_name"]
+            writer = csv.writer(csv_file_write, delimiter=',',
+                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+            writer.writerow(fieldnames)
+
+            count = 0
+            for row in csv_reader:
+                if count > 0:
+                    print("user_link: ", row[0])
+                    employee_profile = get_employee_profile(row[0])
+                    writer.writerows(employee_profile)
+                    print("================== write user completed ===================")
+
+                count += 1
+
+    print("================== write file completed ===================")
 
 
-# def write_employee_profile(index):
-#     print(index)
-#     with open(f'./google/employee_file{index}.csv') as csv_file_open:
-#         csv_reader = csv.reader(csv_file_open, delimiter=',')
+for i in range(50):
+    if i > 17:
+        write_employee_profile(i+1)
 
-#         with open(f"./google_employee_profile/employee_profile{index}.csv", mode='w') as csv_file_write:
-#             fieldnames = ['name', 'duration', "job_title",
-#                           "linkedIn_company_url", "company_name"]
-#             writer = csv.writer(csv_file_write, delimiter=',',
-#                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
+# with open(f"./google_employee_profile/employee_profile{10000}.csv", mode='w', newline='', encoding='utf-8-sig') as csv_file_write:
+#     fieldnames = ['employee_url','name', 'duration','location', "job_title", "company_name"]
+#     writer = csv.writer(csv_file_write, delimiter=',',
+#                         quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-#             writer.writerow(fieldnames)
+#     writer.writerow(fieldnames)
 
-#             count = 0
-#             for row in csv_reader:
-#                 if count > 0:
-#                     print("user_link: ", row[0])
-#                     employee_profile = get_employee_profile(row[0])
-#                     for profile in employee_profile:
-#                         writer.writerow(profile)
-#                         print(profile)
-#                         time.sleep(1)
+#     # employee_profile = get_employee_profile(row[0])
+#     employee_profile = get_employee_profile("file:///C:/Users/yongming/side_project/scrap/uni-code.html")
+#     writer.writerows(employee_profile)
+#     # for profile in employee_profile:
+#     #     writer.writerow(profile)
 
-#                     print("================== write user completed ===================")
+#     print("================== write user completed ===================")
 
-#                 count += 1
-
-#     print("================== write file completed ===================")
-
-
-# for i in range(50):
-#     write_employee_profile(i+1)
